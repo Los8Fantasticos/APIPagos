@@ -10,13 +10,11 @@ namespace MinimalAPI_Pagos.Infrastructure
             : base(options)
         {
         }
+        protected ApplicationDbContext()
+        {
 
-        // protected ApplicationDbContext()
-        //{
-
-        // }
-
-
+        }
+        
         public DbSet<PagosModel>? Factura { get; set; } = null!;
 
         //public ApplicationDbContext()
@@ -36,8 +34,8 @@ namespace MinimalAPI_Pagos.Infrastructure
             modelBuilder.Entity<PagosModel>(entity =>
             {
                 entity.HasKey(e => e.IdFactura);
-                entity.Property(e => e.Patente).HasMaxLength(10).HasColumnName("nvarchar").IsRequired();
-                entity.Property(e => e.Monto).HasMaxLength(10).HasColumnName("nvarchar").IsRequired();
+                entity.Property(e => e.Patente).HasMaxLength(10).HasColumnName("Patente").IsRequired();
+                entity.Property(e => e.Monto).HasMaxLength(10).HasColumnName("Monto").IsRequired();
                 entity.Property(e => e.Fecha).HasDefaultValueSql("getdate()").IsRequired();
                 entity.Property(e => e.Active).HasDefaultValue(true).IsRequired();
 
@@ -46,7 +44,6 @@ namespace MinimalAPI_Pagos.Infrastructure
             base.OnModelCreating(modelBuilder);
             _ = modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
-
 
 
     }

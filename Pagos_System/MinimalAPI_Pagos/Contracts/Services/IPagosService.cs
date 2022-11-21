@@ -2,11 +2,7 @@
 {
     public interface IPagosService
     {
-        /// <summary>
-        /// Valida si está registrada la patente en la base de datos.
-        /// </summary>
-        /// <param name="PagosDTO">Propiedad Patente</param>
-        /// <returns></returns>
-        public Task<bool> ValidatePagos(string PagosDTO);
+        public Task<int> CountPagos();
+        public Task<double> TotalRecaudado();
     }
 }

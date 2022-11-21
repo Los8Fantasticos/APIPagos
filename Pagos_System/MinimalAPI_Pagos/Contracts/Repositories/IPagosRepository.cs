@@ -4,9 +4,9 @@ namespace MinimalAPI_Pagos.Contracts.Repositories
 {
     public interface IPagosRepository
     {
-        public Task<PagosModel> GetPagos(string PagosDTO);
-        public Task CountPagos(bool IsRecognition, PagosModel LastTrafic = null);
-        public Task<PagosModel> GetLastTrafic();
+        public Task Insert(PagosModel pagosModel);
+        public Task<int> CountPagos();
+        public Task<List<PagosModel>> GetAllPagos();
     }
 }
 
