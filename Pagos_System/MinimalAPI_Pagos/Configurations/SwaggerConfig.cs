@@ -35,8 +35,8 @@ namespace MinimalAPI_Pagos.Configurations
                     new OpenApiInfo
                     {
                         Version = "v1",
-                        Title = $"MinimalAPI_Reconocimiento - {ti.ToTitleCase(builder.Environment.EnvironmentName)} ",
-                        Description = "API reconocimiento para sistema de peaje",
+                        Title = $"MinimalAPI_Pagos - {ti.ToTitleCase(builder.Environment.EnvironmentName)} ",
+                        Description = "API pagos para sistema de peaje",
                         Contact = new OpenApiContact
                         {
                             Name = "MinimalAPI_Pagos",
@@ -45,7 +45,7 @@ namespace MinimalAPI_Pagos.Configurations
                         },
                         License = new OpenApiLicense()
                         {
-                            Name = "MinimalAPI_Reconocimiento - License - MIT",
+                            Name = "MinimalAPI_Pagos - License - MIT",
                             Url = new Uri("https://opensource.org/licenses/MIT")
                         },
                         TermsOfService = new Uri("https://github.com/stphnwlsh/cleanminimalapi")

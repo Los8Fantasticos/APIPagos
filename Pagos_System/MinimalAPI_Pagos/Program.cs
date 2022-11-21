@@ -1,43 +1,80 @@
-var builder = WebApplication.CreateBuilder(args);
+using Microsoft.EntityFrameworkCore;
+using MinimalAPI_Pagos.Configurations;
+using MinimalAPI_Pagos.Contracts.Repositories;
+using MinimalAPI_Pagos.Contracts.Services;
+using MinimalAPI_Pagos.Endpoints.Pagos;
+using MinimalAPI_Pagos.Infrastructure;
+using MinimalAPI_Pagos.Infrastructure.Repositories;
+using MinimalAPI_Pagos.Receiver;
+using MinimalAPI_Pagos.Services;
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+using RabbitMqService.Queues;
+using RabbitMqService.RabbitMq;
 
+var builder = WebApplication
+    .CreateBuilder(args)
+    .ConfigureBuilder();
+
+
+ConfigureServices(builder.Services, builder.Configuration);
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+using (var scope = app.Services.CreateScope())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    var databaseContext = scope.ServiceProvider.GetService<ApplicationDbContext>();
+    if (databaseContext != null)
+    {
+        //databaseContext.Database.EnsureCreated();
+    }
+    scope.ServiceProvider.GetService<PagoService>();
+    scope.ServiceProvider.GetService<PagosEndpoint>()?.MapPagosEndpoint(app);
 }
 
-app.UseHttpsRedirection();
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateTime.Now.AddDays(index),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
-
+Configure(app, app.Environment);
 app.Run();
 
-internal record WeatherForecast(DateTime Date, int TemperatureC, string? Summary)
+void ConfigureServices(IServiceCollection services, IConfiguration configuration)
 {
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+
+    var connectionString = builder.Configuration.GetConnectionString("SqlConnection") ?? builder.Configuration["ConnectionStrings"]?.ToString() ?? "";
+
+    services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString, options =>
+    {
+        options.EnableRetryOnFailure(5, TimeSpan.FromSeconds(5), null);
+    }), ServiceLifetime.Singleton);
+
+    services.AddEndpointsApiExplorer();
+    services.AddSwaggerGen();
+    services.ConfigureLogger(builder);
+    services.AddScoped<PagosEndpoint>();
+    services.AddScoped<IPagosService, PagoService>();
+    services.AddScoped<IPagosRepository, PagoRepository>();
+
+    services.AddRabbitMq(settings =>
+    {
+        settings.ConnectionString = configuration.GetValue<string>("RabbitMq:ConnectionString");
+        settings.ExchangeName = configuration.GetValue<string>("AppSettings:ApplicationName");
+        settings.QueuePrefetchCount = configuration.GetValue<ushort>("AppSettings:QueuePrefetchCount");
+    }, queues =>
+    {
+        queues.Add<Pagos>();
+    })
+    .AddReceiver<PatenteReceiver<string>, string, PagoService>();
+
+    //builder.Services.AddConfig<ApiReconocimientoConfig>(builder.Configuration, nameof(ApiReconocimientoConfig));
+}
+
+void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+{
+    if (env.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+        var context = app.ApplicationServices.GetService<ApplicationDbContext>();
+        context?.Database?.Migrate();
+    }
+
+    app.UseHttpsRedirection();
+
+    app.UseRouting();
 }
