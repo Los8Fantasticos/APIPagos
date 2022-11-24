@@ -30,6 +30,7 @@ using (var scope = app.Services.CreateScope())
     scope.ServiceProvider.GetService<PagosEndpoint>()?.MapPagosEndpoint(app);
 }
 
+
 Configure(app, app.Environment);
 app.Run();
 
