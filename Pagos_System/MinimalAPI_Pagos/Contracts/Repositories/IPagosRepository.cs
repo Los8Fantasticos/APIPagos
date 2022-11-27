@@ -6,7 +6,7 @@ namespace MinimalAPI_Pagos.Contracts.Repositories
     {
         public Task Insert(PagosModel pagosModel);
         public Task<int> CountPagos();
-        public Task<List<PagosModel>> GetAllPagos();
+        public Task<double> GetAllPagos();
     }
 }
 

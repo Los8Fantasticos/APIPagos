@@ -32,15 +32,6 @@ namespace MinimalAPI_Pagos.Services
             logger.LogInformation($"Se realizo el pago de la patente: {message}.");
         }
 
-        public async Task<double> TotalRecaudado()
-        {
-            var listapagos = await _pagosRepository.GetAllPagos();
-            double total = 0;
-            foreach (var item in listapagos)
-            {
-                total += item.Monto;
-            }
-            return total;           
-        }
+        public async Task<double> TotalRecaudado() => await _pagosRepository.GetAllPagos();
     }
 }

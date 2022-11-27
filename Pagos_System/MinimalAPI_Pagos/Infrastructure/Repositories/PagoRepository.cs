@@ -15,8 +15,8 @@ namespace MinimalAPI_Pagos.Infrastructure.Repositories
 
         public async Task<int> CountPagos() => await _applicationDbContext.Factura.CountAsync();
 
-        public async Task<List<PagosModel>> GetAllPagos() => await _applicationDbContext.Factura.Select(x => x).ToListAsync();
-
+        //Contar todos los montos
+        public async Task<double> GetAllPagos() => await _applicationDbContext.Factura.SumAsync(x => x.Monto);
         public async Task Insert(PagosModel pagos)
         {
             _applicationDbContext?.Factura?.Add(pagos);
