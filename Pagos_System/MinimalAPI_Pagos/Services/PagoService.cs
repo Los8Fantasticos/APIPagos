@@ -17,6 +17,10 @@ namespace MinimalAPI_Pagos.Services
         }
 
         public async Task<int> CountPagos() => await _pagosRepository.CountPagos();
+        
+        public async Task<double> GetLastPrice() => await _pagosRepository.GetPrice();
+
+        public async Task<double> ModificarPrecioPeaje(double nuevoValor) => await _pagosRepository.ModifyTollPrice(nuevoValor);
 
         public async Task ReceiveAsync(string message, CancellationToken cancellationToken)
         {

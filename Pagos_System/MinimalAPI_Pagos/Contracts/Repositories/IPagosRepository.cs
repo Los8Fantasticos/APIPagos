@@ -7,6 +7,8 @@ namespace MinimalAPI_Pagos.Contracts.Repositories
         public Task Insert(PagosModel pagosModel);
         public Task<int> CountPagos();
         public Task<double> GetAllPagos();
+        public Task<double> GetPrice();
+        public Task<double> ModifyTollPrice(double nuevoValor);
     }
 }
 

@@ -4,6 +4,7 @@ using MinimalAPI_Pagos.Endpoints.Errors;
 using MinimalAPI_Pagos.Models.ApplicationModel;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net.Mime;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MinimalAPI_Pagos.Endpoints.Pagos
 {
@@ -44,6 +45,29 @@ namespace MinimalAPI_Pagos.Endpoints.Pagos
            .Produces<ApiError>(StatusCodes.Status500InternalServerError, contentType: MediaTypeNames.Application.Json);
 
             _ = app.MapGet(
+               "/api/pagos/getPrice",
+               async () =>
+               {
+                   try
+                   {
+                       _logger.LogInformation("Obteniendo el ultimo precio");
+                       double result = await _pagosService.GetLastPrice();
+                       return result;
+                   }
+                   catch (Exception ex)
+                   {
+                       _logger.LogError(ex, "Error XD");
+                       throw;
+                   }
+               })
+           .WithTags("Pagos")
+           .WithMetadata(new SwaggerOperationAttribute("..."))
+           .Produces<PagosModel>(StatusCodes.Status200OK, contentType: MediaTypeNames.Application.Json)
+           .Produces<ApiError>(StatusCodes.Status400BadRequest, contentType: MediaTypeNames.Application.Json)
+           .Produces<ApiError>(StatusCodes.Status404NotFound, contentType: MediaTypeNames.Application.Json)
+           .Produces<ApiError>(StatusCodes.Status500InternalServerError, contentType: MediaTypeNames.Application.Json);
+
+            _ = app.MapGet(
                "/api/pagos/totalFacturado",
                async () =>
                {
@@ -62,6 +86,29 @@ namespace MinimalAPI_Pagos.Endpoints.Pagos
            .WithTags("Pagos")
            .WithMetadata(new SwaggerOperationAttribute("..."))
            .Produces<PagosModel>(StatusCodes.Status200OK, contentType: MediaTypeNames.Application.Json)
+           .Produces<ApiError>(StatusCodes.Status400BadRequest, contentType: MediaTypeNames.Application.Json)
+           .Produces<ApiError>(StatusCodes.Status404NotFound, contentType: MediaTypeNames.Application.Json)
+           .Produces<ApiError>(StatusCodes.Status500InternalServerError, contentType: MediaTypeNames.Application.Json);
+
+            _ = app.MapPost(
+               "/api/pagos/modificarPrecioPeaje",
+               async ([FromBody] double nuevoPrecio) =>
+               {
+                   try
+                   {
+                       _logger.LogInformation("Se busca el total de multas realizadas");
+                       double result = await _pagosService.ModificarPrecioPeaje(nuevoPrecio);
+                       return result;
+                   }
+                   catch (Exception ex)
+                   {
+                       _logger.LogError(ex, "Error en endpoint Multa.");
+                       throw;
+                   }
+               })
+           .WithTags("Pagos")
+           .WithMetadata(new SwaggerOperationAttribute("..."))
+           .Produces<double>(StatusCodes.Status200OK, contentType: MediaTypeNames.Application.Json)
            .Produces<ApiError>(StatusCodes.Status400BadRequest, contentType: MediaTypeNames.Application.Json)
            .Produces<ApiError>(StatusCodes.Status404NotFound, contentType: MediaTypeNames.Application.Json)
            .Produces<ApiError>(StatusCodes.Status500InternalServerError, contentType: MediaTypeNames.Application.Json);

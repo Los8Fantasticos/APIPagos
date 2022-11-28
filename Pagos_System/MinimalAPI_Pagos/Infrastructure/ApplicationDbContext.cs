@@ -16,6 +16,7 @@ namespace MinimalAPI_Pagos.Infrastructure
         }
         
         public DbSet<PagosModel>? Factura { get; set; } = null!;
+        public DbSet<PrecioModel>? Precio { get; set; } = null!;
 
         //public ApplicationDbContext()
         //{
@@ -38,7 +39,12 @@ namespace MinimalAPI_Pagos.Infrastructure
                 entity.Property(e => e.Monto).HasMaxLength(10).HasColumnName("Monto").IsRequired();
                 entity.Property(e => e.Fecha).HasDefaultValueSql("getdate()").IsRequired();
                 entity.Property(e => e.Active).HasDefaultValue(true).IsRequired();
+            });
 
+            modelBuilder.Entity<PrecioModel>(entity =>
+            {
+                entity.HasKey(e => e.idPrecio);
+                entity.Property(e => e.Monto).HasColumnName("Monto").IsRequired();
             });
 
             base.OnModelCreating(modelBuilder);
