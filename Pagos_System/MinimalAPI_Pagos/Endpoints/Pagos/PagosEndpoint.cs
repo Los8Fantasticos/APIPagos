@@ -56,7 +56,7 @@ namespace MinimalAPI_Pagos.Endpoints.Pagos
                    }
                    catch (Exception ex)
                    {
-                       _logger.LogError(ex, "Error XD");
+                       _logger.LogError(ex, "Error al obtener precio");
                        throw;
                    }
                })
