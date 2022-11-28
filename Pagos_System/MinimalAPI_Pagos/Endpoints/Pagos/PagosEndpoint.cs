@@ -44,7 +44,7 @@ namespace MinimalAPI_Pagos.Endpoints.Pagos
            .Produces<ApiError>(StatusCodes.Status500InternalServerError, contentType: MediaTypeNames.Application.Json);
 
             _ = app.MapGet(
-               "/api/totalFacturado",
+               "/api/pagos/totalFacturado",
                async () =>
                {
                    try
